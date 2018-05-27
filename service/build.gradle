@@ -1,0 +1,22 @@
+
+apply plugin: "kotlin-spring"
+apply plugin: "io.spring.dependency-management"
+
+dependencies {
+	compile project(":common")
+	compile project(":persistence")
+
+	// Spring Boot
+	compile "org.springframework.boot:spring-boot-starter-webflux:$springBootVersion"
+	compile "org.springframework.boot:spring-boot-starter-security:$springBootVersion"
+
+	// Json
+	compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.5"
+
+	// Mail
+	compile "org.springframework.boot:spring-boot-starter-mail:$springBootVersion"
+	compile "com.sun.mail:javax.mail"
+
+	// Test
+	testCompile "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+}

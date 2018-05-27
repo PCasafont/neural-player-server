@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="1.8">
+      <module name="common_main" target="1.8" />
+      <module name="common_test" target="1.8" />
+      <module name="neural-player-server_main" target="1.8" />
+      <module name="neural-player-server_test" target="1.8" />
+      <module name="persistence_main" target="1.8" />
+      <module name="persistence_test" target="1.8" />
+      <module name="s_main" target="1.8" />
+      <module name="s_test" target="1.8" />
+      <module name="service_main" target="1.8" />
+      <module name="service_test" target="1.8" />
+      <module name="web_main" target="1.8" />
+      <module name="web_test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
