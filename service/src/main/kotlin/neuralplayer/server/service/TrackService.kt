@@ -65,21 +65,24 @@ class TrackService(private val trackRepository: TrackRepository,
 	}
 
 	@Transactional
-	fun update(id: Long, trackDto: TrackDto, user: User): Track {
+	fun update(id: Long, trackDto: TrackDto): Track {
 		val track = ServicePreconditions.checkEntityExists(findById(id))
 		ServicePreconditions.checkRequestElementNotNull(trackDto)
 		track.title = ServicePreconditions.checkRequestElementNotNull(trackDto.title)
 		track.artist = trackDto.artist
 		track.album = trackDto.album
-		trackDto.preferenceScore?.let { preferenceScore ->
-			val userTrack = userTrackRepository.save(
-					userTrackRepository.findByUserAndTrack(user, track)?.apply {
-						this.preferenceScore = preferenceScore
-					} ?: UserTrack(user, track, preferenceScore)
-			)
-			userTrackRepository.save(userTrack)
-		}
 		return trackRepository.save(track)
+	}
+
+	@Transactional
+	fun updatePreferenceScore(id: Long, user: User, preferenceScore: Double) {
+		val track = ServicePreconditions.checkEntityExists(findById(id))
+		val userTrack = userTrackRepository.save(
+				userTrackRepository.findByUserAndTrack(user, track)?.apply {
+					this.preferenceScore = preferenceScore
+				} ?: UserTrack(user, track, preferenceScore)
+		)
+		userTrackRepository.save(userTrack)
 	}
 
 	@Transactional

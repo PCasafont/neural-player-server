@@ -44,8 +44,17 @@ class TrackController(private val trackService: TrackService,
 			   @RequestBody @Valid trackDto: TrackDto,
 			   principal: Principal?): Mono<TrackDto> {
 		val user = user(principal)
-		val track = trackService.update(id, trackDto, user)
+		val track = trackService.update(id, trackDto)
 		return Mono.just(trackMapper.createTrackDto(track, user))
+	}
+
+	@PutMapping("/{id}/preferenceScore")
+	@ResponseStatus(HttpStatus.OK)
+	fun updatePreferenceScore(@PathVariable id: Long,
+							  @RequestParam("value") preferenceScore: Double,
+							  principal: Principal?) {
+		val user = user(principal)
+		trackService.updatePreferenceScore(id, user, preferenceScore)
 	}
 
 	@DeleteMapping("/{id}")
