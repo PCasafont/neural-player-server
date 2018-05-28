@@ -3,6 +3,7 @@ package neuralplayer.server.mapper
 import neuralplayer.server.dto.TrackDto
 import neuralplayer.server.model.Track
 import neuralplayer.server.model.User
+import neuralplayer.server.repository.UserTrackRepository
 import org.springframework.stereotype.Component
 
 /**
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component
  * @since 2018/04/21
  */
 @Component
-class TrackMapper {
+class TrackMapper(private val userTrackRepository: UserTrackRepository) {
 
 	fun createTrackDto(track: Track, user: User? = null): TrackDto {
 		return TrackDto(
@@ -19,6 +20,6 @@ class TrackMapper {
 				track.artist,
 				track.album,
 				track.fileExtension,
-				user?.tracks?.find { it.id.trackId == track.id }?.preferenceScore ?: 0.0)
+				user?.let { userTrackRepository.findByUserAndTrack(it, track) }?.preferenceScore ?: 0.0)
 	}
 }

@@ -35,9 +35,6 @@ class User {
 	@Column(name = "roles", nullable = false)
 	lateinit var roles: MutableSet<Role>
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-	val tracks: MutableList<UserTrack> = ArrayList()
-
 	@Basic(fetch = FetchType.LAZY)
 	@Column(name = "created_at", nullable = false)
 	lateinit var createdAt: LocalDateTime

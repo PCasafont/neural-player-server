@@ -73,11 +73,11 @@ class TrackService(private val trackRepository: TrackRepository,
 		track.album = trackDto.album
 		trackDto.preferenceScore?.let { preferenceScore ->
 			val userTrack = userTrackRepository.save(
-					user.tracks.find { it.id.trackId == id }?.apply {
+					userTrackRepository.findByUserAndTrack(user, track)?.apply {
 						this.preferenceScore = preferenceScore
 					} ?: UserTrack(user, track, preferenceScore)
 			)
-			user.tracks.add(userTrack)
+			userTrackRepository.save(userTrack)
 		}
 		return trackRepository.save(track)
 	}
