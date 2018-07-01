@@ -10,6 +10,11 @@ dependencies {
 	compile "org.jetbrains.exposed:exposed:0.10.2"
 	compile "org.jetbrains.exposed:spring-transaction:0.10.2"
 
+	// JOOQ
+	compile "org.jooq:jooq:3.11.2"
+	compile "org.jooq:jooq-meta:3.11.2"
+	compile "org.jooq:jooq-codegen:3.11.2"
+
 	// Database Drivers
 	runtime "com.h2database:h2:1.4.193"
 	runtime "mysql:mysql-connector-java:5.1.41"
@@ -17,3 +22,51 @@ dependencies {
 	// Test
 	testCompile "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
 }
+
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+
+	dependencies {
+		classpath 'org.jooq:jooq-codegen:3.11.2'
+		classpath "mysql:mysql-connector-java:5.1.41"
+	}
+}
+
+// Use your favourite XML builder to construct the code generation configuration file
+// ----------------------------------------------------------------------------------
+def writer = new StringWriter()
+def xml = new groovy.xml.MarkupBuilder(writer)
+		.configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.11.0.xsd') {
+	jdbc() {
+		driver('com.mysql.jdbc.Driver')
+		url('jdbc:mysql://localhost:3306/neural_player?verifyServerCertificate=false&useSSL=true')
+		user('pere')
+		password('123456')
+	}
+	generator() {
+		database() {
+		}
+
+		// Watch out for this caveat when using MarkupBuilder with "reserved names"
+		// - https://github.com/jOOQ/jOOQ/issues/4797
+		// - http://stackoverflow.com/a/11389034/521799
+		// - https://groups.google.com/forum/#!topic/jooq-user/wi4S9rRxk4A
+		generate([:]) {
+			pojos true
+			daos true
+		}
+		target() {
+			packageName('org.jooq.example.gradle.db')
+			directory('src/main/java')
+		}
+	}
+}
+
+// Run the code generator
+// ----------------------
+org.jooq.codegen.GenerationTool.generate(
+		javax.xml.bind.JAXB.unmarshal(new StringReader(writer.toString()), org.jooq.meta.jaxb.Configuration.class)
+)
