@@ -11,10 +11,6 @@ import reactor.core.publisher.Mono
 import java.security.Principal
 import javax.validation.Valid
 
-
-
-
-
 @RestController
 @RequestMapping("playlists")
 class PlaylistController(private val playlistService: PlaylistService,

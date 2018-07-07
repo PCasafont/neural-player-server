@@ -6,7 +6,7 @@ import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.web.server.SecurityWebFilterChain
 
 @EnableWebFluxSecurity
-internal class SecurityConfiguration {
+class SecurityConfiguration {
 
 	@Bean
 	fun springWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {

@@ -28,14 +28,14 @@ class UserTrack {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "track_id", insertable = false, updatable = false)
-	lateinit var track: Track
+	lateinit var track: TrackBasicData
 
 	@Column(name = "preference_score", nullable = false)
 	var preferenceScore: Double = 0.0
 
 	constructor()
 
-	constructor(user: User, track: Track, preferenceScore: Double) {
+	constructor(user: User, track: TrackBasicData, preferenceScore: Double) {
 		id = PK(user.id!!, track.id!!)
 		this.user = user
 		this.track = track

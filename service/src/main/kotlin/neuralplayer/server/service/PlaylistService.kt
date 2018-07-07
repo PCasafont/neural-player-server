@@ -40,7 +40,7 @@ class PlaylistService(private val playlistRepository: PlaylistRepository,
 		ServicePreconditions.checkRequestElementNotNull(playlistDto)
 		playlist.name = ServicePreconditions.checkRequestElementNotNull(playlistDto.name)
 		playlist.tracks = ServicePreconditions.checkRequestElementNotNull(playlistDto.tracks).map {
-			ServicePreconditions.checkEntityExists(trackService.findById(it))
+			ServicePreconditions.checkEntityExists(trackService.findBasicById(it))
 		}.toMutableSet()
 		return playlistRepository.save(playlist)
 	}

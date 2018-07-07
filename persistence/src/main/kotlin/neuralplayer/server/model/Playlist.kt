@@ -27,11 +27,11 @@ class Playlist {
 	@JoinTable(name = "playlist_track",
 			joinColumns = [JoinColumn(name = "playlist_id")],
 			inverseJoinColumns = [JoinColumn(name = "track_id")])
-	lateinit var tracks: MutableSet<Track>
+	lateinit var tracks: MutableSet<TrackBasicData>
 
 	constructor()
 
-	constructor(name: String, creator: User, tracks: MutableSet<Track> = HashSet()) {
+	constructor(name: String, creator: User, tracks: MutableSet<TrackBasicData> = HashSet()) {
 		this.name = name
 		this.creator = creator
 		this.tracks = tracks

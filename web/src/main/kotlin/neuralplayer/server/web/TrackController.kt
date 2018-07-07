@@ -29,7 +29,7 @@ class TrackController(private val trackService: TrackService,
 	@ResponseStatus(HttpStatus.OK)
 	fun getAll(principal: Principal?): Flux<TrackDto> {
 		val user = user(principal)
-		return Flux.fromIterable(trackService.findAll().map { trackMapper.createTrackDto(it, user) })
+		return Flux.fromIterable(trackService.findAllBasic().map { trackMapper.createTrackDto(it, user) })
 	}
 
 	@PostMapping

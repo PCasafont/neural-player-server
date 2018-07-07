@@ -1,7 +1,5 @@
 
-apply plugin: "kotlin-spring"
 apply plugin: "org.springframework.boot"
-apply plugin: "io.spring.dependency-management"
 apply plugin: "application"
 
 mainClassName = "neuralplayer.server.ApplicationKt"
@@ -11,16 +9,12 @@ dependencies {
 	compile project(":service")
 
 	// Spring Boot
-	compile "org.springframework.boot:spring-boot-starter-webflux"
-	compile "org.springframework.boot:spring-boot-starter-security"
-	compile "org.springframework.security:spring-security-oauth2-client"
-	compile "org.springframework.security:spring-security-oauth2-jose"
+	compile "org.springframework.boot:spring-boot-starter-webflux:$springBootVersion"
+	compile "org.springframework.boot:spring-boot-starter-security:$springBootVersion"
 
 	// Json
 	compile "com.fasterxml.jackson.module:jackson-module-kotlin"
 
 	// Test
-	testCompile "org.springframework.boot:spring-boot-starter-test"
-	testCompile "io.projectreactor:reactor-test"
-	testCompile "org.springframework.security:spring-security-test"
+	testCompile "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
 }

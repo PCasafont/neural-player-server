@@ -2,8 +2,10 @@ package neuralplayer.server.service
 
 import neuralplayer.server.dto.TrackDto
 import neuralplayer.server.model.Track
+import neuralplayer.server.model.TrackBasicData
 import neuralplayer.server.model.User
 import neuralplayer.server.model.UserTrack
+import neuralplayer.server.repository.TrackBasicDataRepository
 import neuralplayer.server.repository.TrackRepository
 import neuralplayer.server.repository.UserTrackRepository
 import neuralplayer.server.util.ServicePreconditions
@@ -12,8 +14,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
 import java.io.ByteArrayOutputStream
-
-
+import javax.persistence.EntityExistsException
 
 /**
  * @author Pere
@@ -22,6 +23,7 @@ import java.io.ByteArrayOutputStream
 @Service
 @Transactional
 class TrackService(private val trackRepository: TrackRepository,
+				   private val trackBasicDataRepository: TrackBasicDataRepository,
 				   private val userTrackRepository: UserTrackRepository) {
 
 	@Transactional(readOnly = true)
@@ -30,17 +32,21 @@ class TrackService(private val trackRepository: TrackRepository,
 	}
 
 	@Transactional(readOnly = true)
-	fun findAll(): List<Track> {
-		return trackRepository.findAll()
+	fun findBasicById(id: Long): TrackBasicData? {
+		return trackBasicDataRepository.findById(id).orElse(null)
+	}
+
+	@Transactional(readOnly = true)
+	fun findAllBasic(): List<TrackBasicData> {
+		return trackBasicDataRepository.findAll()
 	}
 
 	@Transactional
 	fun create(trackDto: TrackDto, filePart: FilePart): Mono<Track> {
-		val track = findAll().find {
-			it.title == trackDto.title && it.artist == trackDto.artist && it.album == trackDto.album
-		}
+		val title = ServicePreconditions.checkRequestElementNotNull(trackDto.title)
+		val track = trackBasicDataRepository.findByTitleAndArtistAndAlbum(title, trackDto.artist, trackDto.album)
 		if (track != null) {
-			return Mono.just(track)
+			throw EntityExistsException("There's a track with the same title, artist and album already.")
 		}
 
 		return filePart.content().collectList().map {
@@ -50,7 +56,7 @@ class TrackService(private val trackRepository: TrackRepository,
 			}
 			val fileExtension = filePart.filename().substringAfterLast('.', "")
 			trackRepository.save(Track(
-					ServicePreconditions.checkRequestElementNotNull(trackDto.title),
+					title,
 					trackDto.artist,
 					trackDto.album,
 					baos.toByteArray(),
@@ -65,33 +71,31 @@ class TrackService(private val trackRepository: TrackRepository,
 	}
 
 	@Transactional
-	fun update(id: Long, trackDto: TrackDto): Track {
-		val track = ServicePreconditions.checkEntityExists(findById(id))
+	fun update(id: Long, trackDto: TrackDto): TrackBasicData {
+		val track = ServicePreconditions.checkEntityExists(findBasicById(id))
 		ServicePreconditions.checkRequestElementNotNull(trackDto)
 		track.title = ServicePreconditions.checkRequestElementNotNull(trackDto.title)
 		track.artist = trackDto.artist
 		track.album = trackDto.album
-		return trackRepository.save(track)
+		return trackBasicDataRepository.save(track)
 	}
 
 	@Transactional
 	fun updatePreferenceScore(id: Long, user: User, preferenceScore: Double) {
-		val track = ServicePreconditions.checkEntityExists(findById(id))
-		val userTrack = userTrackRepository.save(
-				userTrackRepository.findByUserAndTrack(user, track)?.apply {
-					this.preferenceScore = preferenceScore
-				} ?: UserTrack(user, track, preferenceScore)
-		)
+		val track = ServicePreconditions.checkEntityExists(findBasicById(id))
+		val userTrack = userTrackRepository.findByUserAndTrackId(user, track.id!!)?.apply {
+			this.preferenceScore = preferenceScore
+		} ?: UserTrack(user, track, preferenceScore)
 		userTrackRepository.save(userTrack)
 	}
 
 	@Transactional
-	fun delete(track: Track) {
-		trackRepository.delete(track)
+	fun delete(track: TrackBasicData) {
+		trackBasicDataRepository.delete(track)
 	}
 
 	@Transactional
 	fun delete(id: Long) {
-		trackRepository.deleteById(id)
+		trackBasicDataRepository.deleteById(id)
 	}
 }

@@ -1,6 +1,15 @@
 
-apply plugin: "kotlin-spring"
-apply plugin: "io.spring.dependency-management"
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+
+	dependencies {
+		classpath 'org.jooq:jooq-codegen:3.11.2'
+		classpath "mysql:mysql-connector-java:5.1.41"
+	}
+}
 
 dependencies {
 	compile project(":common")

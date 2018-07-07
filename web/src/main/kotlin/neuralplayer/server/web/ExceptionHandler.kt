@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebExceptionHandler
 import reactor.core.publisher.Mono
+import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
 
 @Component
@@ -41,6 +42,7 @@ class ExceptionHandler : WebExceptionHandler {
 			is EntityNotFoundException -> {
 				createResponse(HttpStatus.NOT_FOUND, "Entity not found${throwable.message?.let { ", details: $it" } ?: ""}")
 			}
+			is EntityExistsException,
 			is BadRequestException -> {
 				createResponse(HttpStatus.BAD_REQUEST, "Bad request${throwable.message?.let { ", details: $it" } ?: ""}")
 			}
